@@ -1,0 +1,56 @@
+{% extends 'jogos/base.html' %}
+
+{% block titulo %}Equipes{% endblock %}
+
+{% block conteudo %}
+        <header class="topo">
+            <span class="sobretitulo">Jogos Interclasses 2026</span>
+            <h1>Equipes inscritas</h1>
+            <p class="descricao">Conheça as equipes que disputam os Jogos Interclasses do campus.</p>
+        </header>
+
+        <div class="busca">
+            <label for="busca">Buscar equipe</label>
+            <input type="search" id="busca" placeholder="Digite o nome da equipe">
+        </div>
+
+        <section class="grade" id="lista-equipes">
+            {% for equipe in equipes %}
+            <article class="card" style="border-top-color: {{ equipe.cor }};">
+                <h3>{{ equipe.nome }}</h3>
+                <dl>
+                    <dt>Curso</dt>
+                    <dd>{{ equipe.curso }} · {{ equipe.ano }}º ano</dd>
+                    <dt>Técnico</dt>
+                    <dd>{% if equipe.tecnico %}{{ equipe.tecnico.nome }}{% else %}não definido{% endif %}</dd>
+                    <dt>Atletas</dt>
+                    <dd>{{ equipe.atletas.count }}</dd>
+                </dl>
+                <a class="link" href="{% url 'equipe' equipe.id %}">Ver equipe</a>
+            </article>
+            {% endfor %}
+        </section>
+
+        <p class="sem-resultado" id="sem-resultado" {% if equipes %}hidden{% endif %}>Nenhuma equipe encontrada.</p>
+
+        <h2>Modalidades</h2>
+        <ul class="lista-modalidades">
+            {% for modalidade in modalidades %}
+            <li><a href="{% url 'modalidade' modalidade.id %}">{{ modalidade.nome }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <script>
+            const busca = document.getElementById('busca');
+            busca.addEventListener('input', function () {
+                const texto = busca.value.toLowerCase();
+                let visiveis = 0;
+                document.querySelectorAll('#lista-equipes .card').forEach(function (card) {
+                    const nome = card.querySelector('h3').textContent.toLowerCase();
+                    card.hidden = !nome.includes(texto);
+                    if (!card.hidden) visiveis++;
+                });
+                document.getElementById('sem-resultado').hidden = visiveis > 0;
+            });
+        </script>
+{% endblock %}
